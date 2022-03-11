@@ -4,7 +4,8 @@ export default function Header() {
 
     return (
         <div className='header--section'>
-        <div className='navbar'></div>
+        <nav className='navbar navbar-expand-lg navbar-light bg-light'/>
+       
         </div>
     )
 }

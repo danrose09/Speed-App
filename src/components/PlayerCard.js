@@ -5,9 +5,12 @@ export default function PlayerCard(props) {
         <div className='container card-container'>
         
         <div className='row'>
-         <img onClick={props.playCard} className='card' src={props.image}></img>
+        <div className='col-lg'>
+        <div className='container-fluid'>
+         <img onClick={props.playCard} className='card img-fluid' src={props.image}></img>
          </div>
-         
+         </div>
+         </div>
          </div>
     )
 }

@@ -6,9 +6,9 @@ export default function Deck(props) {
     
 
     return (
-        <div className='container card-container'>
+        <div hidden={props.hasStarted ? false : true} className='container card-container'>
         
-       <div className='row'>
+       <div className='row deck-row'>
         <img className='card' src={props.image}></img>
         </div>
         

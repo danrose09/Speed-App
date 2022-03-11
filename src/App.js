@@ -2,10 +2,9 @@ import React, { useEffect, useState, useRef } from 'react'
 import Deck from './components/Deck';
 import Header from './components/Header';
 import deck from './deck';
-import Deal from './components/Deal';
 import PlayerCard from './components/PlayerCard';
 import Confetti from 'react-confetti'
-import StartGame from './components/buttons/StartGame';
+import Title from './components/Title';
 import GameButtons from './components/buttons/GameButtons';
 
 
@@ -37,13 +36,12 @@ function App() {
     const [fullDeck, setFullDeck] = useState(deck)
     const [card, setCard] = useState('')
     const [playerHand, setPlayerHand] = useState([])
+    const [hasStarted, setHasStarted] = useState(false)
     const [isStuck, setIsStuck] = useState(false)
     const [hasWon, setHasWon] = useState(false)
     const [needMoreCards, setNeedMoreCards] = useState(false)
     const [isFiveCardDeck, setIsFiveCardDeck] = useState(false)
 
-    console.log(fullDeck)
-    console.log(isStuck)
 
     function handleKey(event) {
         setKey(event.key)
@@ -52,6 +50,8 @@ function App() {
         }
           
     }
+
+    console.log(fullDeck)
     
    
     function checkIfStuck(card, playerhand, fulldeck) {
@@ -69,6 +69,7 @@ function App() {
             } 
              else {
             setIsStuck(false)
+            setNeedMoreCards(false)
         }
         
          
@@ -102,6 +103,7 @@ function App() {
 
         if(fullDeck.length > 0) {
 
+        setHasStarted(true)
         
         
         let randomCard = Math.floor(Math.random()* fullDeck.length)
@@ -153,32 +155,13 @@ function App() {
         }
     }
 
-    // 1. If no fullDeck.length === 0 and playerhand > 0 NeedMoreCards OK
-    // 2. Save player hand ids to local variable
-
-
+    
     function giveDeckCards() {
 
-        const playerHandCards = []
-        for (var i = 0; i < playerHand.length; i++) {
-            playerHandCards.push(playerHand[i])
-        }
-    // 3. SetfullDeck to deck
-        
-    // 4. generate player hand with saved ids
-        setPlayerHand(playerHandCards)
-        console.log(playerHand)
-    // 5. filter out player cards from deck
-       let newFullDeck = []
-       for (var i = 0; i < 5; i++) {
-        let randomCard = Math.floor(Math.random()* deck.length)
-        let newCard =  deck[randomCard]
-        newFullDeck.push(newCard)
-       }
-        setFullDeck(newFullDeck)
+
         setNeedMoreCards(false)
         setIsFiveCardDeck(true)
-        console.log(fullDeck)
+   
 
     }
     
@@ -186,6 +169,7 @@ function App() {
         setFullDeck(deck)
         setCard('')
         setPlayerHand([])
+        setHasStarted(false)
         setIsStuck(false)
         setHasWon(false)
         setNeedMoreCards(false)
@@ -206,15 +190,18 @@ function App() {
     <div className="App">
         {hasWon ? <Confetti /> : null}
       <Header />
-      <p>Key pressed is: {key}</p>
-      <input type="text" onKeyPress={(e) => handleKey(e)}></input>
-      <StartGame 
+      <Title />
+      {/* <p>Key pressed is: {key}</p>
+      <input type="text" onKeyPress={(e) => handleKey(e)}></input> */}
+      {/* <StartGame 
           dealCard={dealCard}
           fullDeck={fullDeck}
-      />
+      /> */}
        <GameButtons 
+         fullDeck={fullDeck}
          generateNewPlayerHand={generateNewPlayerHand}
          dealCard={dealCard}
+         hasStarted={hasStarted}
          giveDeckCards={giveDeckCards}
          resetGame={resetGame}
          isStuck={isStuck}
@@ -223,6 +210,7 @@ function App() {
      />
       <Deck
       image={card.image}
+      hasStarted={hasStarted}
        />
         <div className='row'>
        <div className='playerhand-container'>

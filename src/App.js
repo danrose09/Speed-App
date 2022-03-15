@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import Deck from './components/Deck';
 import Header from './components/Header';
 import deck from './deck';
@@ -6,32 +6,13 @@ import PlayerCard from './components/PlayerCard';
 import Confetti from 'react-confetti'
 import Title from './components/Title';
 import GameButtons from './components/buttons/GameButtons';
+import Timer from './components/Timer';
 
-
-
-// function useKey(key, cb) {
-    
-//     const callbackRef = useRef(cb)
-
-//     useEffect(() => {
-//         callbackRef.current = cb
-//     })
-
-//     useEffect(() => {
-
-//         function handle(event) {
-//             if(event.code === key) {
-//                 callbackRef.current(event)
-//             }
-//         }
-
-//         document.addEventListener('keypress', handle)
-//         return () => document.removeEventListener('keypress', handle)
-//     }, [key])
-// }
 
 function App() {
    
+    const [isOn, setIsOn] = useState(false)
+    const [time, setTime] = useState(0)  
     const [key, setKey] = useState('')
     const [fullDeck, setFullDeck] = useState(deck)
     const [card, setCard] = useState('')
@@ -41,6 +22,7 @@ function App() {
     const [hasWon, setHasWon] = useState(false)
     const [needMoreCards, setNeedMoreCards] = useState(false)
     const [isFiveCardDeck, setIsFiveCardDeck] = useState(false)
+    
 
 
     function handleKey(event) {
@@ -51,17 +33,23 @@ function App() {
           
     }
 
-    console.log(fullDeck)
+    console.log(`fullDeck ${fullDeck.length}`)
+    console.log(`playerHand ${playerHand.length}`)
+    console.log(`isStuck ${isStuck}`)
+    console.log(`hasWon ${hasWon}`)
+    console.log(`isFiveCardDeck ${isFiveCardDeck}`)
+    console.log(`needMoreCards ${needMoreCards}`)
+    console.log(`hasStarted ${hasStarted}`)
     
    
     function checkIfStuck(card, playerhand, fulldeck) {
         function checkValue(cardItem) {
             return cardItem.Value < card.Value
         }
-        if (playerhand.length > 0 && fulldeck.length === 0) {
+        if (playerhand.length > 0 && fulldeck.length === 0 && !isFiveCardDeck) {
             setNeedMoreCards(true)
             console.log('Player Needs More Cards')
-         } else if (playerhand.every(checkValue) === true) {
+         } else if (playerhand.every(checkValue) === true && !isFiveCardDeck) {
              if (playerhand.length > 0 && playerhand.length === 5) {
                 setIsStuck(true)
              } 
@@ -83,19 +71,22 @@ function App() {
     function checkHasWon(fulldeck, playerhand) {
         if (fulldeck.length === 0 && playerhand.length === 0) {
             setHasWon(true)
+            setIsOn(false)
             console.log('Congrats you won!')
-        } else if (playerhand.length === 0 && !needMoreCards && isFiveCardDeck){
+        } else if (playerhand.length === 0 && isFiveCardDeck){
+            setNeedMoreCards(false)
             setHasWon(true)
+            setIsOn(false)
             console.log('Congrats you won!')
         }
-        else {
-            console.log("Hasn't won")
-        }
+        
     }
 
 
     useEffect(() => {
+        
         checkHasWon(fullDeck, playerHand)
+        
     }, [playerHand, card])
     
 
@@ -104,7 +95,7 @@ function App() {
         if(fullDeck.length > 0) {
 
         setHasStarted(true)
-        
+        setIsOn(true)
         
         let randomCard = Math.floor(Math.random()* fullDeck.length)
         let newCard =  fullDeck[randomCard]
@@ -121,20 +112,15 @@ function App() {
     
     function generateNewCard() {
 
-            
-        
             let randomCard = Math.floor(Math.random()* fullDeck.length)
             let newCard =  fullDeck[randomCard]
 
             setFullDeck(prevDeck => {
                return prevDeck.filter(card =>
                 card.id !== newCard.id)
-                 
             })
 
-            return {...newCard,
-                isPlayed: true }
-            
+            return {...newCard}
         }
 
     function generateNewPlayerHand() {
@@ -158,10 +144,40 @@ function App() {
     
     function giveDeckCards() {
 
-
-        setNeedMoreCards(false)
         setIsFiveCardDeck(true)
-   
+        let newHandSize = playerHand.length
+        let newHand = []
+        let newDeck = deck
+        let newTenCardDeck = []
+        let newStackCard = []
+        for (var i = 0; i < newHandSize; i++) {
+        
+            let randomCard = Math.floor(Math.random()* newDeck.length)
+            let newCard =  newDeck[randomCard]
+            newHand.push(newCard)
+
+            newDeck.filter(card => ( card.id !== newCard.id))
+        }
+            let randomCard = Math.floor(Math.random()* newDeck.length)
+            let newCard =  newDeck[randomCard]
+            newStackCard = newCard
+            newDeck.filter(card => ( card.id !== newCard.id))
+            setCard(newStackCard)
+        
+        for (var i = 0; i < 1; i++) {
+            let randomCard = Math.floor(Math.random()* newDeck.length)
+            let newCard =  newDeck[randomCard]
+            newTenCardDeck.push(newCard)
+            
+        }
+
+        setFullDeck(newTenCardDeck)
+        setPlayerHand(newHand)
+        setHasStarted(true)
+        setIsStuck(false)
+        setHasWon(false)
+        setNeedMoreCards(false)
+       
 
     }
     
@@ -191,6 +207,11 @@ function App() {
         {hasWon ? <Confetti /> : null}
       <Header />
       <Title />
+      <Timer 
+          isOn={isOn}
+          time={time}
+          setTime={setTime}
+      />
       {/* <p>Key pressed is: {key}</p>
       <input type="text" onKeyPress={(e) => handleKey(e)}></input> */}
       {/* <StartGame 
@@ -207,6 +228,7 @@ function App() {
          isStuck={isStuck}
          needMoreCards={needMoreCards}
          hasWon={hasWon}
+         isFiveCardDeck={isFiveCardDeck}
      />
       <Deck
       image={card.image}

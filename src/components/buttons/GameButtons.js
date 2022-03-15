@@ -1,15 +1,18 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 export default function GameButtons(props) {
+
+    
+
     return (
     <div className='container'>
 
         <div className='row start-button-row'>
         <div className='col-lg'>
     <button 
-        onClick={props.dealCard} 
+        onClick={props.dealCard}
         className='game-button'
-        hidden={props.fullDeck.length < 52 ? true : false}>Start
+        hidden={!props.hasStarted ? false : true}>Start
         </button>
         </div>
 

@@ -1,6 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 export default function PlayerCard(props) {
+
+    const [key, setKey] = useState('')
+
+    function handleKey(event) {
+        setKey(event.key)
+        if (key === 'q') {
+            console.log(key)
+        }
+          
+    }
+
     return (
         <div className='container card-container'>
         
@@ -11,6 +22,8 @@ export default function PlayerCard(props) {
          </div>
          </div>
          </div>
+         <button id={props.id} className='game-button'>Play Card {props.id}</button>
+         <input type='text' hidden={true} onChange={handleKey}></input>
          </div>
     )
 }

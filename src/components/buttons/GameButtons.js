@@ -18,7 +18,7 @@ export default function GameButtons(props) {
         </div>
 
 
-    <div className='row'>
+    <div className='row button-row'>
 
     
 
@@ -38,9 +38,10 @@ export default function GameButtons(props) {
     <button className='game-button' onClick={props.giveDeckCards} hidden={props.needMoreCards ? false : true}>Deal Random Card</button>
     </div>
     
-    
-    <div className='col-sm-3'>
-    <button className='game-button' onClick={props.resetGame} hidden={props.hasWon ? false : true}>Play Again</button>
+    <div className='row play-again'>
+    <div className='col-lg'>
+    <button className='game-button ' onClick={props.resetGame} hidden={props.hasWon ? false : true}>Play Again</button>
+    </div>
     </div>
     </div>
     </div>

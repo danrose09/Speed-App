@@ -12,9 +12,10 @@ import Timer from './components/Timer';
 
 function App() {
    
-    
+    //Intialize states
     
     const [fullDeck, setFullDeck] = useState(deck)
+    const [newDeck, setNewDeck] = useState(deck)
     const [card, setCard] = useState('')
     const [playerHand, setPlayerHand] = useState([])
     const [hasStarted, setHasStarted] = useState(false)
@@ -22,7 +23,10 @@ function App() {
     const [hasWon, setHasWon] = useState(false)
     const [needMoreCards, setNeedMoreCards] = useState(false)
     const [isFiveCardDeck, setIsFiveCardDeck] = useState(false)
+    const [reset, setReset] = useState(false)
     
+
+    //Console log to check for errors
 
     console.log(`fullDeck ${fullDeck.length}`)
     console.log(`playerHand ${playerHand.length}`)
@@ -31,8 +35,10 @@ function App() {
     console.log(`isFiveCardDeck ${isFiveCardDeck}`)
     console.log(`needMoreCards ${needMoreCards}`)
     console.log(`hasStarted ${hasStarted}`)
+    console.log(`reset: ${reset}`)
     console.log('//////////////////////////////////////////')
     
+    //CheckIfStuck functionality
    
     function checkIfStuck(card, playerhand, fulldeck) {
         function checkValue(cardItem) {
@@ -42,7 +48,7 @@ function App() {
             } else if (cardItem.Value === 2) {
                 return card.Value !== 14 && card.Value !== 3
             } else if (cardItem.Value === 14) {
-                return (card.Value !== 2)
+                return (card.Value !== 2 && card.Value !==13)
             }
             
         }
@@ -71,10 +77,13 @@ function App() {
          
     }
 
+    //Check if the player is stuck and cannot play cards in hand
+
     useEffect(() => {
         checkIfStuck(card, playerHand, fullDeck)
     }, [playerHand, card])
 
+    //checkHasWon function
 
     function checkHasWon(fulldeck, playerhand) {
         if (fulldeck.length === 0 && playerhand.length === 0) {
@@ -93,6 +102,7 @@ function App() {
         
     }
 
+    //Continue to check if player has won the game
 
     useEffect(() => {
         
@@ -101,17 +111,18 @@ function App() {
     }, [playerHand, card])
     
 
+    //Begin game and deal random card to stack
+
     function dealCard() {
 
         if(fullDeck.length > 0) {
 
         setHasStarted(true)
-        
+        setReset(false)
         
         let randomCard = Math.floor(Math.random()* fullDeck.length)
         let newCard =  fullDeck[randomCard]
-        setCard({...newCard,
-            isPlayed: true})
+        setCard(newCard)
         
        setFullDeck(prevDeck => {
           return prevDeck.filter(card => ( card.id !== newCard.id))
@@ -120,6 +131,7 @@ function App() {
         
     }
         
+    //Create random card from deck
     
     function generateNewCard() {
 
@@ -134,12 +146,16 @@ function App() {
             return {...newCard}
         }
 
+    //Add card from deck to player hand
+
     function generateNewPlayerHand() {
         if (playerHand.length < 5 && fullDeck.length > 0) {
             setPlayerHand(prevHand => 
             [...prevHand, generateNewCard()])
         }
     }
+
+    //Play card from hand to the stack
 
     function playCard(playerCard, stackCard) {
         if (playerCard.Value === stackCard.Value + 1 
@@ -164,30 +180,57 @@ function App() {
         }
     }
 
-    
+    //Give deck New Cards when deck length === 0
+
     function giveDeckCards() {
 
         setIsFiveCardDeck(true)
-        let handSize = playerHand.length
-        let newDeck = deck
-        let newStackCard = []
-        for (var i = 0; i < handSize; i++) {
-            let newCard = playerHand[i]
-            newDeck.filter(card => ( card.id !== newCard.id))
-        }
+        let randomCard = Math.floor(Math.random()* newDeck.length)
+        let newCard =  newDeck[randomCard]
+
+        function dealAgain() {
+            console.log('dealt again')
             let randomCard = Math.floor(Math.random()* newDeck.length)
             let newCard =  newDeck[randomCard]
-            newStackCard = newCard
-            newDeck.filter(card => ( card.id !== newCard.id))
-            setCard(newStackCard)
-
+            function checkIfPlayed(cardItem) {
+                if (cardItem.id !== newCard.id) {
+                    return true
+                } else {
+                    return false
+                }
+             }
+             
+             if (playerHand.every(checkIfPlayed) === true) {
+                setCard(newCard)
+            } else {
+                dealAgain()
+            }
+        }
+        
+            function checkIfPlayed(cardItem) {
+                if (cardItem.id !== newCard.id) {
+                    return true
+                } else {
+                    return false
+                }
+             }   
+             
+            if (playerHand.every(checkIfPlayed) === true) {
+                setCard(newCard)
+            } else {
+                dealAgain()
+            }
+            
+        
         setFullDeck([])
         setHasStarted(true)
         setIsStuck(false)
         setHasWon(false)
         setNeedMoreCards(false)
-
-    }
+        }
+       
+        
+    //Reset the Game
     
     function resetGame() {
         setFullDeck(deck)
@@ -198,9 +241,11 @@ function App() {
         setHasWon(false)
         setNeedMoreCards(false)
         setIsFiveCardDeck(false)
+        setReset(true)
     }
 
-   
+    //Create Player Hand Elements
+    
     const playerHandElements = playerHand.map(cards => (
         <PlayerCard 
             key={cards.id}
@@ -210,6 +255,7 @@ function App() {
         />
     ))
 
+    //Return App
 
   return (
     <div className="App">
@@ -220,6 +266,7 @@ function App() {
           hasStarted={hasStarted}
           hasWon={hasWon}
           fullDeck={fullDeck}
+          reset={reset}
       />
        <GameButtons 
          fullDeck={fullDeck}

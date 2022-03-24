@@ -24,18 +24,19 @@ export default function GameButtons(props) {
 
     <div hidden={props.hasWon ? true : false} className='col-sm-3'>
     <button className='game-button' 
+    id='dealtohand'
     hidden={props.hasStarted ? false : true}
     onClick={props.generateNewPlayerHand}>Deal To Hand</button>
     </div>
     
     
     <div hidden={props.hasWon ? true : false} className='col-sm-3'>
-    <button className='game-button' onClick={props.dealCard} hidden={props.isStuck ? false : true}>Deal To Stack</button>
+    <button id='dealtostack' className='game-button' onClick={props.dealCard} hidden={props.isStuck ? false : true}>Deal To Stack</button>
     </div>
     
     
     <div hidden={props.hasWon ? true : false} className='col-sm-3'>
-    <button className='game-button' onClick={props.giveDeckCards} hidden={props.needMoreCards ? false : true}>Deal Random Card</button>
+    <button id='dealrandomcard' className='game-button' onClick={props.giveDeckCards} hidden={props.needMoreCards ? false : true}>Deal Random Card</button>
     </div>
     
     <div className='row play-again'>

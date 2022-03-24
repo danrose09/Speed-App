@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import Deck from './components/Deck';
 import Header from './components/Header';
 import deck from './deck';
@@ -8,9 +8,69 @@ import Title from './components/Title';
 import GameButtons from './components/buttons/GameButtons';
 import Timer from './components/Timer';
 
+function useKey(key, cb) {
+
+    const callbackRef = useRef(cb)
+
+    useEffect(() => {
+        callbackRef.current = cb
+    })
+
+
+    useEffect(() => {
+    function handleKey(event) {
+        if (event.key === key) {
+            callbackRef.current(event)
+        }
+    }
+        document.addEventListener('keydown', handleKey)
+        return () => document.removeEventListener('keydown', handleKey)
+    }, [key])
+}
+
+
+
 
 
 function App() {
+
+    //Keyboard Functionality
+
+    function playCardOne() {
+        document.getElementById('1').click()
+    }
+    function playCardTwo() {
+        document.getElementById('2').click()
+    }
+    function playCardThree() {
+        document.getElementById('3').click()
+    }
+    function playCardFour() {
+        document.getElementById('4').click()
+    }
+    function playCardFive() {
+        document.getElementById('5').click()
+    }
+    function randomCardtoHand() {
+        document.getElementById('dealtohand').click()
+    }
+
+    function randomCardToStack() {
+        document.getElementById('dealtostack').click()
+    }
+
+    function dealRandomCard() {
+        document.getElementById('dealrandomcard').click()
+    }
+
+    useKey('a', playCardOne)
+    useKey('s', playCardTwo)
+    useKey('d', playCardThree)
+    useKey('f', playCardFour)
+    useKey('g', playCardFive)
+    useKey('q', randomCardtoHand)
+    useKey('r', randomCardToStack)
+    useKey('t', dealRandomCard)
    
     //Intialize states
     
@@ -27,7 +87,6 @@ function App() {
     
 
     //Console log to check for errors
-
     console.log(`fullDeck ${fullDeck.length}`)
     console.log(`playerHand ${playerHand.length}`)
     console.log(`isStuck ${isStuck}`)
@@ -63,6 +122,7 @@ function App() {
          && !isFiveCardDeck) {
              if (fulldeck.length > 0 && playerhand.length === 5) {
                     setIsStuck(true)
+                    
                  } 
             } else if (playerhand.every(checkValue) === true 
             && isFiveCardDeck)  {
@@ -86,6 +146,7 @@ function App() {
     //checkHasWon function
 
     function checkHasWon(fulldeck, playerhand) {
+      
         if (fulldeck.length === 0 && playerhand.length === 0) {
             setHasWon(true)
             setHasStarted(false)
@@ -124,6 +185,7 @@ function App() {
         let newCard =  fullDeck[randomCard]
         setCard(newCard)
         
+        
        setFullDeck(prevDeck => {
           return prevDeck.filter(card => ( card.id !== newCard.id))
        })
@@ -135,6 +197,7 @@ function App() {
     
     function generateNewCard() {
 
+            
             let randomCard = Math.floor(Math.random()* fullDeck.length)
             let newCard =  fullDeck[randomCard]
 
@@ -183,7 +246,6 @@ function App() {
     //Give deck New Cards when deck length === 0
 
     function giveDeckCards() {
-
         setIsFiveCardDeck(true)
         let randomCard = Math.floor(Math.random()* newDeck.length)
         let newCard =  newDeck[randomCard]
@@ -233,6 +295,7 @@ function App() {
     //Reset the Game
     
     function resetGame() {
+        
         setFullDeck(deck)
         setCard('')
         setPlayerHand([])
@@ -244,6 +307,10 @@ function App() {
         setReset(true)
     }
 
+    //Keyboard Functionality 
+
+   
+
     //Create Player Hand Elements
     
     const playerHandElements = playerHand.map(cards => (
@@ -252,13 +319,15 @@ function App() {
             image={cards.image}
             id={playerHand.indexOf(cards) + 1}
             playCard={() => {return playCard(cards, card)}}
+            hasStarted={hasStarted}
+            
         />
     ))
 
     //Return App
 
   return (
-    <div className="App">
+    <div id='app' className="App">
         {hasWon ? <Confetti /> : null}
       <Header />
       <Title />

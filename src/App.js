@@ -7,6 +7,7 @@ import Confetti from 'react-confetti'
 import Title from './components/Title';
 import GameButtons from './components/buttons/GameButtons';
 import Timer from './components/Timer';
+import HighScores from './components/HighScores';
 
 function useKey(key, cb) {
 
@@ -74,6 +75,7 @@ function App() {
    
     //Intialize states
     
+    const [backendApi, setBackendApi] = useState({})
     const [fullDeck, setFullDeck] = useState(deck)
     const [newDeck, setNewDeck] = useState(deck)
     const [card, setCard] = useState('')
@@ -84,9 +86,22 @@ function App() {
     const [needMoreCards, setNeedMoreCards] = useState(false)
     const [isFiveCardDeck, setIsFiveCardDeck] = useState(false)
     const [reset, setReset] = useState(false)
+
+    //Backend API
+
+    useEffect(() => {
+        fetch("/api").then(
+            response => response.json()
+        ).then(
+            data => {
+                setBackendApi(data)
+            } 
+        )
+    }, [])
     
 
     //Console log to check for errors
+    console.log(`High Scores: ${backendApi}`)
     console.log(`fullDeck ${fullDeck.length}`)
     console.log(`playerHand ${playerHand.length}`)
     console.log(`isStuck ${isStuck}`)
@@ -307,10 +322,7 @@ function App() {
         setReset(true)
     }
 
-    //Keyboard Functionality 
-
-   
-
+    
     //Create Player Hand Elements
     
     const playerHandElements = playerHand.map(cards => (
@@ -336,6 +348,10 @@ function App() {
           hasWon={hasWon}
           fullDeck={fullDeck}
           reset={reset}
+      />
+      <HighScores 
+          hasWon={hasWon}
+          backendApi={backendApi}
       />
        <GameButtons 
          fullDeck={fullDeck}

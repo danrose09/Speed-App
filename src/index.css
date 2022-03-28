@@ -23,6 +23,10 @@
   text-align: center;
 }
 
+.highScores-container {
+    text-align: center;
+}
+
 .game-button {
   height: 50px;
   width: 150px;
@@ -65,8 +69,8 @@
 }
 
 .player-card {
-    height: 100px;
-    width: 75px;
+    height: 200px;
+    width: 150px;
     cursor: pointer;
   }
 
